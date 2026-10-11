@@ -1,0 +1,39 @@
+{
+	"schemaVersion": 1,
+	"id": "infinite-inventory",
+	"version": "${version}",
+	"name": "Infinite Inventory",
+	"description": "Adds a secondary infinitely-expandable inventory that acts as a chest accessible at all times!",
+	"authors": [
+		"robsterad"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/robsterad/infinite-inventory-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/infinite-inventory/icon2.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.robsterad.infiniteinv.InfiniteInv"
+		],
+		"client": [
+			"com.robsterad.infiniteinv.InfiniteInvClient"
+		],
+		"modmenu": [
+			"com.robsterad.infiniteinv.config.InfiniteInvModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"infiniteinv.client.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "1.16.5",
+		"java": ">=8",
+		"fabric": "*",
+		"modmenu": ">=1.16.23",
+		"cloth-config2": ">=4.17.101"
+	}
+}
