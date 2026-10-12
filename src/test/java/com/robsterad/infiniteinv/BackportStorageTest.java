@@ -108,6 +108,33 @@ class BackportStorageTest {
                 InfiniteInventoryState.UiPrefs.DEFAULT));
     }
 
+    @Test
+    void oldGrassPathIdentifierNeedsAnItemDataFixBefore120CanDecodeIt(@TempDir Path directory) throws Exception {
+        InfiniteInventoryState state = new InfiniteInventoryState();
+        UUID player = UUID.randomUUID();
+        PlayerInfiniteInventory inventory = new PlayerInfiniteInventory();
+        inventory.addStack(new ItemStack(Items.DIRT_PATH));
+        state.players.put(player, inventory);
+        NbtCompound data = state.writeNbt(new NbtCompound());
+        data.getCompound("players").getList(player.toString(), 10).getCompound(0)
+                .getCompound("item").putString("id", "minecraft:grass_path");
+        InfiniteInventoryState decoded = InfiniteInventoryState.fromNbt(data);
+        assertTrue(decoded.players.get(player).getAllItems().isEmpty(),
+                "The old identifier decodes as an empty stack and is silently omitted");
+        NbtCompound root = new NbtCompound();
+        root.putInt("DataVersion", 2586);
+        root.put("data", data);
+        Path file = directory.resolve("infinite_inventory.dat");
+        net.minecraft.nbt.NbtIo.writeCompressed(root, file.toFile());
+        byte[] original = Files.readAllBytes(file);
+        PersistentStateManager manager = new PersistentStateManager(directory.toFile(), Schemas.getFixer());
+        InfiniteInventoryState loaded = manager.getOrCreate(
+                InfiniteInventoryState::fromNbt, InfiniteInventoryState::new, "infinite_inventory");
+        assertTrue(loaded.players.get(player).getAllItems().isEmpty(),
+                "The real 1.20 saved-data loader does not fix the nested item identifier either");
+        assertArrayEquals(original, Files.readAllBytes(file), "Loading alone should not replace the original file");
+    }
+
     private static <T extends FabricPacket> T roundTrip(T packet, PacketType<T> type) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         try {

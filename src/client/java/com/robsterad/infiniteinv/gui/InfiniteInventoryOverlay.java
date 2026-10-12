@@ -274,13 +274,6 @@ public class InfiniteInventoryOverlay {
                 }
 
 
-                if (sortButton.isMouseOver(mx, my))
-                    ctx.drawTooltip(client.textRenderer, Text.literal("Sort: " + currentSort.hoverName), mx, my);
-                if (tooltipBtn.isMouseOver(mx, my))
-                    ctx.drawTooltip(client.textRenderer, Text.literal("Item Tooltips"), mx, my);
-                if (collapseBtn.isMouseOver(mx, my))
-                    ctx.drawTooltip(client.textRenderer, Text.literal(panelVisible ? "Hide panel" : "Show panel"), mx, my);
-
                 // item tooltip
                 if (hoveredItem != null) {
                     ctx.drawItemTooltip(client.textRenderer, hoveredItem, mx, my);
