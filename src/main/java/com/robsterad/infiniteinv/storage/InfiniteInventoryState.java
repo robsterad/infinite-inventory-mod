@@ -42,13 +42,15 @@ public class InfiniteInventoryState extends SavedData {
     private static final Codec<PlayerStateWrapper> PLAYER_STATE_CODEC = SAVED_ITEM_CODEC.listOf().xmap(
             list -> {
                 PlayerStateWrapper wrapper = new PlayerStateWrapper(new PlayerInfiniteInventory(), new HashMap<>());
+                Map<ItemKey, Long> counts = new HashMap<>();
                 for (SavedItem saved : list) {
                     ItemKey key = ItemKey.of(saved.stack());
                     if (key != null) {
-                        wrapper.inv.setItemCountDirectly(key, saved.count());
-                        wrapper.times.put(key, saved.timestamp());
+                        counts.merge(key, saved.count(), Math::addExact);
+                        wrapper.times.merge(key, saved.timestamp(), Math::max);
                     }
                 }
+                counts.forEach(wrapper.inv::setItemCountDirectly);
                 return wrapper;
             },
             wrapper -> {
